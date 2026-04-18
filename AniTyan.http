@@ -1,0 +1,6 @@
+@AniTyan_HostAddress = http://localhost:5084
+
+GET {{AniTyan_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
