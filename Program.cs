@@ -1,23 +1,22 @@
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+
+// Добавляем Swagger генератор
+builder.Services.AddEndpointsApiExplorer(); // необходимо для Swagger
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Настройка конвейера HTTP
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();          // генерирует swagger.json
+    app.UseSwaggerUI();        // включает Swagger UI (доступен по /swagger)
 }
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
