@@ -7,9 +7,19 @@ namespace AniTyan.Controllers
     public class AnimeGirlsController : Controller
     {
         [HttpPost]
-        public IActionResult CreateAnimeGirl()
+        public async Task<IActionResult> CreateAnimeGirl(IFormFile cardFile)
         {
-            return Ok(new { message = "Make anime girl"});
+            if (cardFile == null || cardFile.Length == 0)
+                return BadRequest("Файл не загружен");
+
+            if (cardFile.ContentType != "image/png")
+                return BadRequest("Требуется PNG-файл (Koikatsu Card)");
+
+            using var memoryStream = new MemoryStream();
+            await cardFile.CopyToAsync(memoryStream);
+            var fileBytes = memoryStream.ToArray();
+
+            return File(fileBytes, "image/png");
         }
 
         [HttpGet]
