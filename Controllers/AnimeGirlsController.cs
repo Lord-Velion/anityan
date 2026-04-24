@@ -1,5 +1,6 @@
 ﻿using AniTyan.Services;
 using Microsoft.AspNetCore.Mvc;
+using Minio;
 
 namespace AniTyan.Controllers
 {
@@ -7,6 +8,13 @@ namespace AniTyan.Controllers
     [Route("[controller]")]
     public class AnimeGirlsController : Controller
     {
+        private readonly IMinioClient _minioClient;
+
+        public AnimeGirlsController(IMinioClient minioClient)
+        {
+            _minioClient = minioClient;
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateAnimeGirl(IFormFile cardFile)
         {
@@ -20,9 +28,9 @@ namespace AniTyan.Controllers
             await cardFile.CopyToAsync(memoryStream);
             var fileBytes = memoryStream.ToArray();
 
-            var resultBytes = AnimeGirlMaker.makeAnimeGirl(fileBytes);
-
-            return File(fileBytes, "image/png");
+            var resultBytes = await AnimeGirlMaker.MakeAnimeGirl(_minioClient, fileBytes);
+            
+            return File(resultBytes, "image/png");
         }
 
         [HttpGet]

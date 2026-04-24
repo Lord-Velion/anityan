@@ -1,3 +1,6 @@
+using Minio;
+using Minio.DataModel.Args;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -5,6 +8,12 @@ builder.Services.AddControllers();
 // Добавляем Swagger генератор
 builder.Services.AddEndpointsApiExplorer(); // необходимо для Swagger
 builder.Services.AddSwaggerGen();
+
+var minioConfig = builder.Configuration.GetSection("MinIO");
+builder.Services.AddMinio(
+    accessKey: minioConfig["AccessKey"],
+    secretKey: minioConfig["SecretKey"]
+    );
 
 var app = builder.Build();
 
