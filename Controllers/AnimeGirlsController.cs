@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AniTyan.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AniTyan.Controllers
 {
@@ -18,6 +19,8 @@ namespace AniTyan.Controllers
             using var memoryStream = new MemoryStream();
             await cardFile.CopyToAsync(memoryStream);
             var fileBytes = memoryStream.ToArray();
+
+            var resultBytes = AnimeGirlMaker.makeAnimeGirl(fileBytes);
 
             return File(fileBytes, "image/png");
         }
