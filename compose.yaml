@@ -64,33 +64,7 @@ services:
     networks:
       - app-network
 
-  ollama-init:
-    image: ollama/ollama:latest
-    container_name: ollama-init
-    depends_on:
-      - ollama
-    volumes:
-      - ollama-data:/root/.ollama
-    environment:
-      - OLLAMA_HOST=http://ollama:11434
-    entrypoint: /bin/sh
-    command: >
-      -c "
-        echo 'Waiting for Ollama...';
-        while ! curl -s http://ollama:11434/api/tags > /dev/null; do sleep 1; done;
-        echo 'Pulling gemma2:2b (approx 1.6GB)...';
-        ollama pull gemma2:2b;
-        echo 'Model ready. Exiting init container.'
-      "
-    networks:
-      - app-network
-
-# The commented out section below is an example of how to define a PostgreSQL
-# database that your application can use. `depends_on` tells Docker Compose to
-# start the database before your application. The `db-data` volume persists the
-# database data between container restarts. The `db-password` secret is used
-# to set the database password. You must create `db/password.txt` and add
-# a password of your choosing to it before running `docker compose up`.
+# docker compose exec ollama ollama pull gemma2:2b
 
 networks:
   app-network:
