@@ -11,7 +11,7 @@ namespace AniTyan.Data
 
             // Provide the same connection string you're using in your application
             // For local development, you can specify it directly here
-            var connectionString = "Host=db;Database=example;Username=postgres;Password=mysecretpassword";
+            var connectionString = "Host=localhost;Port=5432;Database=anityan;Username=postgres;Password=mysecretpassword";
 
             optionsBuilder.UseNpgsql(connectionString);
 
