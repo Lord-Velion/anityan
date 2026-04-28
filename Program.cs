@@ -1,7 +1,10 @@
+using AniTyan.Data;
 using AniTyan.Models.Entities;
+using AniTyan.Models.Services.AniTyanService;
+using AniTyan.Models.Services.KoikatsuCardService;
+using Microsoft.EntityFrameworkCore;
 using Minio;
 using Minio.DataModel.Args;
-using AniTyan.Models.Services.KoikatsuCardService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +25,12 @@ builder.Services.AddMinio(
     accessKey: minioConfig["AccessKey"],
     secretKey: minioConfig["SecretKey"]
     );
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<AnimeGirlMaker>();
+builder.Services.AddScoped<IKoikatsuCardService, KoikatsuCardService>();
 
 var app = builder.Build();
 

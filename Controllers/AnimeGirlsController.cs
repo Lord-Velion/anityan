@@ -1,4 +1,5 @@
-﻿using AniTyan.Models.Services.KoikatsuCardService;
+﻿using AniTyan.Models.Services.AniTyanService;
+using AniTyan.Models.Services.KoikatsuCardService;
 using Microsoft.AspNetCore.Mvc;
 using Minio;
 
@@ -8,6 +9,12 @@ namespace AniTyan.Controllers
     [Route("[controller]")]
     public class AnimeGirlsController : Controller
     {
+        private readonly AnimeGirlMaker _animeGirlMaker;
+
+        public AnimeGirlsController(AnimeGirlMaker animeGirlMaker)
+        {
+            _animeGirlMaker = animeGirlMaker;
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreateAnimeGirl(IFormFile cardFile,
@@ -22,6 +29,11 @@ namespace AniTyan.Controllers
             bool isValid = await koikatsuCardService.IsValidCardAsync(cardFile);
             if (!isValid)
                 return BadRequest("Загруженный файл не является валидной картой Koikatsu");
+
+            /*
+             * Создание anime-girl, вызов AnimeGirlMaker
+             */
+            await _animeGirlMaker.MakeAnimeGirl(cardFile);
 
             return Ok(new { message = "Create anime girl"});
         }
