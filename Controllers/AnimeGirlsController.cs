@@ -1,4 +1,4 @@
-﻿using AniTyan.Services;
+﻿using AniTyan.Models.Services.KoikatsuCardService;
 using Microsoft.AspNetCore.Mvc;
 using Minio;
 
@@ -8,15 +8,10 @@ namespace AniTyan.Controllers
     [Route("[controller]")]
     public class AnimeGirlsController : Controller
     {
-        private readonly IMinioClient _minioClient;
-
-        public AnimeGirlsController(IMinioClient minioClient)
-        {
-            _minioClient = minioClient;
-        }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAnimeGirl(IFormFile cardFile)
+        public async Task<IActionResult> CreateAnimeGirl(IFormFile cardFile,
+            [FromServices] IKoikatsuCardService koikatsuCardService)
         {
             if (cardFile == null || cardFile.Length == 0)
                 return BadRequest("Файл не загружен");
@@ -24,19 +19,17 @@ namespace AniTyan.Controllers
             if (cardFile.ContentType != "image/png")
                 return BadRequest("Требуется PNG-файл (Koikatsu Card)");
 
-            using var memoryStream = new MemoryStream();
-            await cardFile.CopyToAsync(memoryStream);
-            var fileBytes = memoryStream.ToArray();
+            bool isValid = await koikatsuCardService.IsValidCardAsync(cardFile);
+            if (!isValid)
+                return BadRequest("Загруженный файл не является валидной картой Koikatsu");
 
-            var resultBytes = await AnimeGirlMaker.MakeAnimeGirl(_minioClient, fileBytes);
-            
-            return File(resultBytes, "image/png");
+            return Ok(new { message = "Create anime girl"});
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok(new { message = "Get list of all anime girls" });
+            return Ok(new { message = "Get list of all anime girls"});
         }
 
         [HttpGet("{id}")]

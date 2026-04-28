@@ -63,6 +63,21 @@ services:
 
 # docker compose exec ollama ollama pull gemma2:2b
 
+  koikatsu-card-service:
+    image: velion/koikatsu-card-service:latest
+    container_name: koikatsu-card-service
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
 networks:
   app-network:
     driver: bridge

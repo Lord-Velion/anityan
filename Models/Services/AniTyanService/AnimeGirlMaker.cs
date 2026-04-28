@@ -2,12 +2,12 @@
 using Minio.DataModel.Args;
 using System.IO;
 
-namespace AniTyan.Services
+namespace AniTyan.Models.Services.AniTyanService
 {
     public class AnimeGirlMaker
     {
         public static async Task<byte[]> MakeAnimeGirl(IMinioClient minioClient, byte[] pngBytes)
-        {
+        {            
             var bucketName = "anime-girls";
             var objectKey = $"anime-card-{Guid.NewGuid()}.png";
 
