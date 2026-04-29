@@ -21,10 +21,14 @@ builder.Services.AddHttpClient<IKoikatsuCardService, KoikatsuCardService>(client
 });
 
 var minioConfig = builder.Configuration.GetSection("MinIO");
-builder.Services.AddMinio(
-    accessKey: minioConfig["AccessKey"],
-    secretKey: minioConfig["SecretKey"]
-    );
+builder.Services.AddMinio(configureClient: opt =>
+{
+    opt.WithEndpoint(minioConfig["Endpoint"])
+       .WithCredentials(
+           minioConfig["AccessKey"],
+           minioConfig["SecretKey"])
+       .WithSSL(false); // так как у вас http, не https
+});
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
