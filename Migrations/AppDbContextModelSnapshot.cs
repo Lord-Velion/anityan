@@ -38,7 +38,10 @@ namespace AniTyan.Migrations
                     b.Property<string>("Nickname")
                         .HasColumnType("text");
 
-                    b.Property<string>("ObjectKey")
+                    b.Property<string>("Object3dKey")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ObjectCardKey")
                         .HasColumnType("text");
 
                     b.HasKey("Id");

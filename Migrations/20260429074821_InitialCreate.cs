@@ -20,7 +20,8 @@ namespace AniTyan.Migrations
                     Lastname = table.Column<string>(type: "text", nullable: true),
                     Firstname = table.Column<string>(type: "text", nullable: true),
                     Nickname = table.Column<string>(type: "text", nullable: true),
-                    ObjectKey = table.Column<string>(type: "text", nullable: true)
+                    ObjectCardKey = table.Column<string>(type: "text", nullable: true),
+                    Object3dKey = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {

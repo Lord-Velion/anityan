@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AniTyan.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260428153759_InitialCreate")]
+    [Migration("20260429074821_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -41,7 +41,10 @@ namespace AniTyan.Migrations
                     b.Property<string>("Nickname")
                         .HasColumnType("text");
 
-                    b.Property<string>("ObjectKey")
+                    b.Property<string>("Object3dKey")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ObjectCardKey")
                         .HasColumnType("text");
 
                     b.HasKey("Id");
