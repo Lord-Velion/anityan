@@ -30,7 +30,6 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddScoped<AnimeGirlMaker>();
-builder.Services.AddScoped<IKoikatsuCardService, KoikatsuCardService>();
 
 var app = builder.Build();
 

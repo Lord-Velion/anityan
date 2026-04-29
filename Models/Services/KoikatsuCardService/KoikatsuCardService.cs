@@ -22,60 +22,71 @@ namespace AniTyan.Models.Services.KoikatsuCardService
 
         public async Task<bool> IsValidCardAsync(IFormFile cardFile)
         {
-            using var content = new MultipartFormDataContent();
-            using var stream = cardFile.OpenReadStream();
-            var fileContent = new StreamContent(stream);
-            fileContent.Headers.ContentType = new System.Net.Http.Headers.
-                MediaTypeHeaderValue(cardFile.ContentType);
-            content.Add(fileContent, "file", cardFile.FileName);
-
             try
             {
+                using var memoryStream = new MemoryStream();
+                await cardFile.CopyToAsync(memoryStream);
+                memoryStream.Position = 0;
+
+                using var content = new MultipartFormDataContent();
+                var fileContent = new StreamContent(memoryStream);
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(cardFile.ContentType);
+
+                content.Add(fileContent, "file", cardFile.FileName);
+
                 var response = await _httpClient.PostAsync("validate", content);
+
                 if (!response.IsSuccessStatusCode)
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    _logger.LogWarning("Koikatsu service returned {StatusCode}: {Error}", response.StatusCode, errorContent);
                     return false;
+                }
 
                 var result = await response.Content.ReadFromJsonAsync<ValidationResponse>();
                 return result?.IsValid == true;
-            } 
+            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error calling koikatsu card service");
+                _logger.LogError(ex, "CRITICAL: Error calling koikatsu card service");
                 return false;
             }
         }
 
         public async Task<CharacterNameResponse> GetCharacterNameAsync(IFormFile cardFile)
         {
-            using var content = new MultipartFormDataContent();
-            using var stream = cardFile.OpenReadStream();
-            var fileContent = new StreamContent(stream);
-            fileContent.Headers.ContentType = new System.Net.Http.Headers.
-                MediaTypeHeaderValue(cardFile.ContentType);
-            content.Add(fileContent, "file", cardFile.FileName);
-
             try
             {
+                using var memoryStream = new MemoryStream();
+                await cardFile.CopyToAsync(memoryStream);
+                memoryStream.Position = 0;
+
+                using var content = new MultipartFormDataContent();
+                var fileContent = new StreamContent(memoryStream);
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(cardFile.ContentType);
+                content.Add(fileContent, "file", cardFile.FileName);
+
                 var response = await _httpClient.PostAsync("name", content);
+
                 if (!response.IsSuccessStatusCode)
                 {
-                    var errorText = await _httpClient.PostAsync("name", content);
-                    _logger.LogError("Failed to get character name: {StatusCode}, {Error}",
-                        response.StatusCode, errorText);
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    _logger.LogWarning("Koikatsu service returned {StatusCode} for name extraction: {Error}",
+                        response.StatusCode, errorContent);
 
-                    throw new HttpRequestException($"Name extraction failed: {response.StatusCode}");
+                    throw new HttpRequestException($"Name extraction failed: {response.StatusCode} - {errorContent}");
                 }
 
                 var result = await response.Content.ReadFromJsonAsync<CharacterNameResponse>();
                 if (result == null)
                 {
-                    throw new InvalidOperationException("Deserialization returned null");
+                    throw new InvalidOperationException("Deserialization returned null for character name");
                 }
                 return result;
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
-                _logger.LogError(ex, "Error calling koikatsu card service for name extraction");
+                _logger.LogError(ex, "CRITICAL: Error in GetCharacterNameAsync");
                 throw;
             }
         }
